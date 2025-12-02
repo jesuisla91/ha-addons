@@ -1,3 +1,2 @@
-#!/usr/bin/with-contenv bash
-echo "[PLANNER] Service stopped"
+#!/usr/bin/execlineb -S1
 exit 0

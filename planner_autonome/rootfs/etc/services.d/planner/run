@@ -1,4 +1,4 @@
-#!/usr/bin/with-contenv bash
+#!/usr/bin/execlineb -P
+with-contenv
 cd /opt/planner/service
-echo "[PLANNER] Starting server..."
-exec node server.js
+node server.js
