@@ -2,7 +2,7 @@
 const fs = require("fs");
 
 const DATA_FILE = "/data/planner.json";
-const WEBHOOK_URL = "http://a0d7b954-nodered:1880/planner_update";
+const WEBHOOK_URL = "http://supervisor/addons/a0d7b954_nodered/proxy/planner_update";
 
 // Modes et jours fériés comme dans le front
 const MODES = ["Travail", "Maison", "Absence"];
