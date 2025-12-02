@@ -2,7 +2,7 @@
   "name": "Planner autonome",
   "version": "1.0.0",
   "slug": "planner_autonome",
-  "description": "Planner autonome pour gérer les modes et phases de journée sans dépendre d’une page Lovelace.",
+  "description": "Planner autonome pour gérer les modes et phases de journée",
   "arch": ["amd64"],
   "startup": "services",
   "boot": "auto",
@@ -11,10 +11,12 @@
     "8000/tcp": 8000
   },
   "webui": "http://[HOST]:[PORT:8000]",
-  "map": ["data:rw"],
-  "options": {},
-  "schema": {},
-  "hassio_api": true,
-  "hassio_role": "default"
 
+  "map": ["data:rw"],
+
+  "hassio_api": true,
+  "hassio_role": "default",
+
+  "options": {},
+  "schema": {}
 }
