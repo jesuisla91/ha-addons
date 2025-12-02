@@ -2,17 +2,13 @@
   "name": "Planner Autonome",
   "slug": "planner_autonome",
   "version": "1.0.0",
-  "description": "Autonomous Planner running independently from the HA frontend.",
+  "description": "Planner autonome pour Home Assistant",
+  "arch": ["amd64", "aarch64", "armv7", "armhf", "i386"],
   "startup": "services",
   "boot": "auto",
-  "host_network": true,
   "ports": {
     "8000/tcp": 8000
   },
-  "ports_description": {
-    "8000/tcp": "Planner Web Interface"
-  },
-  "arch": ["amd64", "aarch64", "armv7"],
   "options": {},
   "schema": {}
 }
