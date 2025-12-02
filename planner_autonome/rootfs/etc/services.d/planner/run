@@ -1,6 +1,4 @@
 #!/usr/bin/with-contenv bash
-set -e
-
 cd /opt/planner/service
-echo "[Planner] Starting server.js"
+echo "[PLANNER] Starting server..."
 exec node server.js

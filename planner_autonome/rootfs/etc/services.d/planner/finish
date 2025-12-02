@@ -1,2 +1,3 @@
-#!/bin/bash
-echo "[Planner] Service stopped"
+#!/usr/bin/with-contenv bash
+echo "[PLANNER] Service stopped"
+exit 0
