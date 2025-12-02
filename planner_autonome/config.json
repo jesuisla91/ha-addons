@@ -13,8 +13,8 @@
   "webui": "http://[HOST]:[PORT:8000]",
   "map": ["data:rw"],
   "options": {},
-  "schema": {}
+  "schema": {},
   "hassio_api": true,
-  "hassio_role": "default",
+  "hassio_role": "default"
 
 }
