@@ -1,1 +1,12 @@
-{ "name": "planner-autonome", "version": "1.0.0", "dependencies": { "express": "^4.18.2" } }
+{
+  "name": "planner-service",
+  "version": "0.1.0",
+  "description": "Backend service for Home Assistant planner add-on",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2"
+  }
+}
