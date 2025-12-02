@@ -1,16 +1,16 @@
 ARG BUILD_FROM=ghcr.io/home-assistant/amd64-base:latest
 FROM ${BUILD_FROM}
 
-# Install Node.js
 RUN apk add --no-cache nodejs npm
 
-# Copy S6 rootfs (services)
-COPY ./rootfs/ /
+# Copie rootfs
+COPY rootfs/ /
 
-# Copy Planner service code
-COPY ./service/ /opt/planner/service/
+# Copie service + web
+COPY service/ /opt/planner/service/
+COPY web/ /opt/planner/web/
 
-# Copy web UI
-COPY ./web/ /opt/planner/web/
+# Installe les dépendances Node (dont express)
+RUN npm install --prefix /opt/planner/service
 
 WORKDIR /opt/planner/service/
