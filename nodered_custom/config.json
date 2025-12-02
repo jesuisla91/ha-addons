@@ -1,0 +1,19 @@
+{
+  "name": "Node-RED Custom",
+  "version": "1.0.0",
+  "slug": "nodered_custom",
+  "description": "A custom Node-RED add-on maintained by Joseph.",
+  "arch": ["amd64", "aarch64", "armv7"],
+  "startup": "services",
+  "boot": "auto",
+  "host_network": true,
+  "ports": {
+    "1880/tcp": 1880
+  },
+  "ports_description": {
+    "1880/tcp": "Node-RED Web UI"
+  },
+  "webui": "http://[HOST]:[PORT:1880]",
+  "options": {},
+  "schema": {}
+}
