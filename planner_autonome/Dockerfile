@@ -16,4 +16,5 @@ WORKDIR /opt/planner/service/
 # Install dependencies if package.json exists
 RUN if [ -f package.json ]; then npm install; fi
 
-CMD [ "/run.sh" ]
+# S6 will handle the service startup
+
