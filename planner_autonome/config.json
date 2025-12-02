@@ -1,14 +1,14 @@
 {
-  "name": "Planner Autonome",
-  "slug": "planner_autonome",
+  "name": "Planner autonome",
   "version": "1.0.0",
-  "description": "Planner autonome pour Home Assistant",
-  "arch": ["amd64", "aarch64", "armv7", "armhf", "i386"],
+  "slug": "planner_autonome",
+  "description": "Planner autonome pour gérer les modes et phases de journée sans dépendre d’une page Lovelace.",
+  "arch": ["amd64"],
   "startup": "services",
   "boot": "auto",
+  "init": false,
   "ports": {
     "8000/tcp": 8000
   },
-  "options": {},
-  "schema": {}
+  "webui": "http://[HOST]:[PORT:8000]"
 }
