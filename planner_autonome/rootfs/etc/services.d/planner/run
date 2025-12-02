@@ -1,4 +1,0 @@
-#!/usr/bin/execlineb -P
-with-contenv
-cd /opt/planner/service
-node server.js
