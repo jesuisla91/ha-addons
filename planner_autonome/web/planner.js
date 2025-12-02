@@ -1,4 +1,4 @@
-﻿// ================== CONFIG LOCALE ==================
+// ================== CONFIG LOCALE ==================
 
 const MODES = ["Travail", "Maison", "Absence"];
 const PHASES = [
