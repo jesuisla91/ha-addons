@@ -1,24 +1,66 @@
-<!DOCTYPE html>
-<html>
+﻿<!DOCTYPE html>
+<html lang="fr">
 <head>
-    <title>Planner Autonome</title>
+    <meta charset="UTF-8">
+    <title>Planificateur de journée pour Home Assistant</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="planner.css">
 </head>
 <body>
-    <h1>Planner Autonome</h1>
-    <p id="state">Chargement…</p>
+<header>
+    <h1>Planificateur de journée pour Home Assistant</h1>
+</header>
 
-    <script>
-        async function refreshState() {
-            const res = await fetch("/api/state");
-            const data = await res.json();
+<section id="calendar-section">
+    <h2>Calendrier des modes de journée</h2>
 
-            document.getElementById("state").innerHTML =
-                "<b>Mode :</b> " + data.mode + "<br>" +
-                "<b>Phase :</b> " + data.phase;
-        }
+    <div class="calendar-wrapper">
+        <!-- Palette des modes (Travail / Maison / Absence) -->
+        <div class="control-group calendar-mode-controls">
+            <span>Modes de journée :</span>
+            <div id="mode-palette"></div>
+        </div>
 
-        refreshState();
-        setInterval(refreshState, 2000);
-    </script>
+        <div id="calendar-header">
+            <button id="cal-prev">&laquo;</button>
+            <span id="cal-month-label">Mois AAAA</span>
+            <button id="cal-next">&raquo;</button>
+        </div>
+
+        <div id="calendar-grid" class="calendar-grid"></div>
+    </div>
+</section>
+
+<br>
+
+<section id="grid-section">
+    <h2>Planning horaire des phases (glisser pour peindre)</h2>
+
+    <section id="controls">
+        <div class="control-group">
+            <span>Phases de la journée :</span>
+            <div id="phase-palette"></div>
+        </div>
+
+        <div class="control-group status">
+            <div>Heure locale : <span id="current-time">--:--</span></div>
+            <div>Mode du jour : <span id="current-mode-label">---</span></div>
+            <div>Phase actuelle : <span id="current-phase">---</span></div>
+            <div>Dernière synchro HA : <span id="ha-status">Aucune</span></div>
+        </div>
+    </section>
+
+    <div id="schedule-grid" class="grid"></div>
+</section>
+
+<footer>
+    <p>
+        Les plannings (modes + phases) sont stockés dans le navigateur (localStorage).
+        Seul le mode du jour et la phase actuelle sont envoyés à Home Assistant.
+    </p>
+</footer>
+
+<script src="config.js"></script>
+<script src="planner.js"></script>
 </body>
 </html>
