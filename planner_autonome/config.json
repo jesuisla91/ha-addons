@@ -10,5 +10,8 @@
   "ports": {
     "8000/tcp": 8000
   },
-  "webui": "http://[HOST]:[PORT:8000]"
+  "webui": "http://[HOST]:[PORT:8000]",
+  "map": ["data:rw"],
+  "options": {},
+  "schema": {}
 }
