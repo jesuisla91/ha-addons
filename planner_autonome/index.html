@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Planner Autonome</title>
+</head>
+<body>
+    <h1>Planner Autonome</h1>
+    <p id="state">Chargement…</p>
+
+    <script>
+        async function refreshState() {
+            const res = await fetch("/api/state");
+            const data = await res.json();
+
+            document.getElementById("state").innerHTML =
+                "<b>Mode :</b> " + data.mode + "<br>" +
+                "<b>Phase :</b> " + data.phase;
+        }
+
+        refreshState();
+        setInterval(refreshState, 2000);
+    </script>
+</body>
+</html>
