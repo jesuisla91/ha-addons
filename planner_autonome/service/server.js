@@ -2,6 +2,9 @@ const express = require("express");
 const fs = require("fs");
 const path = require("path");
 
+// Import du scheduler autonome
+const { startScheduler } = require("./scheduler");
+
 const app = express();
 
 const WEB_ROOT = "/opt/planner/web";
@@ -23,7 +26,6 @@ app.get("/", (req, res) => {
 app.get("/api/planner/config", (req, res) => {
     fs.readFile(DATA_FILE, "utf8", (err, data) => {
         if (err) {
-            // Si le fichier n'existe pas encore, on renvoie une config vide
             if (err.code === "ENOENT") {
                 return res.json({ phases: {}, modes: {} });
             }
@@ -35,7 +37,7 @@ app.get("/api/planner/config", (req, res) => {
             const json = JSON.parse(data);
             res.json({
                 phases: json.phases || {},
-                modes: json.modes || {}
+                modes: json.modes  || {}
             });
         } catch (e) {
             console.error("Erreur parse planner.json :", e);
@@ -47,9 +49,8 @@ app.get("/api/planner/config", (req, res) => {
 // POST /api/planner/config → enregistre { phases, modes }
 app.post("/api/planner/config", (req, res) => {
     const body = req.body || {};
-
     const phases = body.phases || {};
-    const modes  = body.modes || {};
+    const modes  = body.modes  || {};
 
     const toSave = { phases, modes };
 
@@ -62,7 +63,8 @@ app.post("/api/planner/config", (req, res) => {
     });
 });
 
-// Démarrage du serveur
+// Démarrage du serveur + scheduler
 app.listen(PORT, () => {
     console.log(`Planner service listening on port ${PORT}`);
+    startScheduler();   // <<<<<<<<<<<<<<<<<<<<<<<<<<<<<< IMPORTANT
 });
