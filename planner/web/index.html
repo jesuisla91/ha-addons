@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Planner – Modes & Phases</title>
+    <link rel="stylesheet" href="planner.css">
+</head>
+
+<body>
+    <header>
+        <h1>Planner – Modes de journée & Phases horaires</h1>
+    </header>
+
+    <section id="info-bar">
+        <div>Heure actuelle : <span id="current-time">--:--</span></div>
+        <div>Mode actuel : <span id="current-mode-label">--</span></div>
+        <div>Phase actuelle : <span id="current-phase">--</span></div>
+        <div>Backend : <span id="ha-status">Chargement...</span></div>
+    </section>
+
+    <section id="calendar-section">
+        <div class="calendar-header">
+            <button id="prev-month">&lt;</button>
+            <span id="cal-month-label">Mois</span>
+            <button id="next-month">&gt;</button>
+        </div>
+        <div id="calendar-grid" class="calendar-grid"></div>
+    </section>
+
+    <section id="mode-section">
+        <h2>Modes de journée</h2>
+        <div id="mode-palette" class="palette"></div>
+    </section>
+
+    <section id="phase-section">
+        <h2>Phases horaires</h2>
+        <div id="phase-palette" class="palette"></div>
+    </section>
+
+    <section id="schedule-section">
+        <h2>Configuration des phases (24h)</h2>
+        <div id="schedule-grid" class="schedule-grid"></div>
+    </section>
+
+    <script src="planner.js"></script>
+</body>
+</html>
