@@ -1,21 +1,16 @@
-const fetch = require("node-fetch");
+const fetch = (...args) =>
+  import("node-fetch").then(({ default: fetch }) => fetch(...args));
 
-// Intervalle de synchronisation (en secondes)
 const TICK_SECONDS = 60;
 
-// URLs internes Home Assistant
 const HA_SERVICE_URL = "http://supervisor/core/api/services/input_select/select_option";
-
-// Token d’accès interne
 const TOKEN = process.env.SUPERVISOR_TOKEN;
 
-// Entités Home Assistant
 const ENTITY_MODE = "input_select.mode_journee";
 const ENTITY_PHASE = "input_select.phase_journee";
 
-// Import de la logique interne du planner
-const { getCurrentMode, getCurrentPhaseForNow, formatTime, dateToKey } = require("./planner-core");  
-// Tu remplaces par ce que tu utilises comme fonctions (ou tu intègres directement)
+// TA LOGIQUE À TOI (import ou code)
+const { getCurrentMode, getCurrentPhaseForNow } = require("./planner-core");
 
 // Fonction générique d’appel Home Assistant API
 async function sendToHA(entity, value) {

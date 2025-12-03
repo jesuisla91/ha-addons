@@ -3,6 +3,7 @@ FROM ${BUILD_FROM}
 
 # Installer Node.js et npm
 RUN apk add --no-cache nodejs npm
+COPY service/package.json /opt/planner/service/package.json
 
 # Copier rootfs (pour l'instant peut être vide, c'est OK)
 COPY rootfs/ /
@@ -19,3 +20,8 @@ WORKDIR /opt/planner/service/
 
 # Lancer le serveur Node.js quand le conteneur démarre
 CMD ["node", "/opt/planner/service/server.js"]
+
+
+
+
+
