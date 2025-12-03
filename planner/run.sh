@@ -1,4 +1,6 @@
-#!/usr/bin/env bash
+#!/usr/bin/with-contenv bashio
 
-echo "Starting Planner Add-on..."
-node /app/service/server.js
+bashio::log.info "Starting Planner add-on..."
+
+cd /app/service
+node server.js
