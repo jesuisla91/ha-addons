@@ -1,0 +1,120 @@
+/* Planner – Styles généraux */
+body {
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+    background: #f3f3f3;
+}
+
+header {
+    background: #1f6feb;
+    color: white;
+    padding: 12px 20px;
+}
+
+h1, h2 {
+    margin: 10px 0;
+}
+
+/* Barre info */
+#info-bar {
+    display: flex;
+    gap: 20px;
+    padding: 10px 20px;
+    background: #fff;
+    border-bottom: 1px solid #ddd;
+}
+
+/* Palettes */
+.palette {
+    display: flex;
+    gap: 12px;
+    padding: 10px 20px;
+}
+
+.palette .item {
+    padding: 8px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    border: 2px solid transparent;
+    user-select: none;
+}
+
+.palette .item.active {
+    border-color: black;
+}
+
+/* Couleurs des modes */
+.mode-Travail {
+    background-color: #ffe69b;
+}
+
+.mode-Maison {
+    background-color: #b1f5d2;
+}
+
+.mode-Absence {
+    background-color: #f7b1b1;
+}
+
+/* Couleurs des phases */
+.phase-nuit { background: #2c3e50; color: white; }
+.phase-lever { background: #f1c40f; }
+.phase-presence { background: #2ecc71; }
+.phase-absent { background: #e67e22; }
+.phase-soiree { background: #9b59b6; color: white; }
+.phase-couche { background: #34495e; color: white; }
+.phase-retour { background: #1abc9c; }
+
+/* Calendrier */
+#calendar-section {
+    padding: 10px 20px;
+}
+
+.calendar-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 260px;
+}
+
+#calendar-grid {
+    margin-top: 10px;
+    display: grid;
+    grid-template-columns: repeat(7, 35px);
+    gap: 5px;
+}
+
+.calendar-day {
+    width: 35px;
+    height: 35px;
+    background: white;
+    text-align: center;
+    line-height: 35px;
+    border-radius: 4px;
+    cursor: pointer;
+    border: 1px solid #ddd;
+}
+
+.calendar-day.selected {
+    border: 2px solid #1f6feb;
+}
+
+/* Grille des phases horaires */
+.schedule-grid {
+    display: grid;
+    grid-template-columns: repeat(24, 1fr);
+    border: 1px solid #ccc;
+    margin: 20px;
+}
+
+.schedule-hour {
+    height: 30px;
+    border-right: 1px solid #ddd;
+    border-bottom: 1px solid #ddd;
+    cursor: crosshair;
+}
+
+.schedule-hour:last-child {
+    border-right: none;
+}
