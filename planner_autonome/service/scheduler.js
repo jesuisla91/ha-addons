@@ -1,132 +1,69 @@
-// service/scheduler.js
-const fs = require("fs");
+const fetch = require("node-fetch");
 
-const DATA_FILE = "/data/planner.json";
-const WEBHOOK_URL = "http://supervisor/addons/a0d7b954_nodered/proxy/planner_update";
+// Intervalle de synchronisation (en secondes)
+const TICK_SECONDS = 60;
 
+// URLs internes Home Assistant
+const HA_SERVICE_URL = "http://supervisor/core/api/services/input_select/select_option";
 
+// Token d’accès interne
+const TOKEN = process.env.SUPERVISOR_TOKEN;
 
-// Modes et jours fériés comme dans le front
-const MODES = ["Travail", "Maison", "Absence"];
-const HOLIDAYS = ["01-01", "05-01", "07-14", "12-25"];
+// Entités Home Assistant
+const ENTITY_MODE = "input_select.mode_journee";
+const ENTITY_PHASE = "input_select.phase_journee";
 
-let lastSentMode = null;
-let lastSentPhase = null;
-let schedulerStarted = false;
+// Import de la logique interne du planner
+const { getCurrentMode, getCurrentPhaseForNow, formatTime, dateToKey } = require("./planner-core");  
+// Tu remplaces par ce que tu utilises comme fonctions (ou tu intègres directement)
 
-function dateToKey(date) {
-    const y = date.getFullYear();
-    const m = String(date.getMonth() + 1).padStart(2, "0");
-    const d = String(date.getDate()).padStart(2, "0");
-    return `${y}-${m}-${d}`;
-}
-
-function isHoliday(date) {
-    const iso = date.toISOString().split("T")[0];
-    const parts = iso.split("-");
-    const mmdd = parts[1] + "-" + parts[2];
-    return HOLIDAYS.includes(mmdd);
-}
-
-function loadConfig() {
-    return new Promise((resolve, reject) => {
-        fs.readFile(DATA_FILE, "utf8", (err, data) => {
-            if (err) {
-                if (err.code === "ENOENT") {
-                    return resolve({ phases: {}, modes: {} });
-                }
-                return reject(err);
-            }
-            try {
-                const json = JSON.parse(data);
-                resolve({
-                    phases: json.phases || {},
-                    modes: json.modes  || {}
-                });
-            } catch (e) {
-                reject(e);
-            }
-        });
-    });
-}
-
-function getModeForDate(date, modes) {
-    const dateKey = dateToKey(date);
-
-    if (modes && modes[dateKey] && MODES.includes(modes[dateKey])) {
-        return modes[dateKey];
+// Fonction générique d’appel Home Assistant API
+async function sendToHA(entity, value) {
+    if (!TOKEN) {
+        console.error("[planner] SUPERVISOR_TOKEN manquant !");
+        return;
     }
 
-    if (isHoliday(date)) return "Maison";
-
-    const dow = date.getDay();
-    if (dow === 0 || dow === 6) return "Maison"; // Weekend
-
-    return "Travail";
-}
-
-function getPhaseForNow(phases, mode, date) {
-    const hour = date.getHours();
-    if (!phases || !phases[mode]) return "Nuit";
-    return phases[mode][hour] || "Nuit";
-}
-
-async function sendWebhook(mode, phase, date) {
     const payload = {
-        mode,
-        phase,
-        timestamp: date.toISOString(),
-        date: dateToKey(date),
-        hour: date.getHours()
+        entity_id: entity,
+        option: value
     };
 
     try {
-        const resp = await fetch(WEBHOOK_URL, {
+        const resp = await fetch(HA_SERVICE_URL, {
             method: "POST",
-            headers: { "Content-Type": "application/json" },
+            headers: {
+                "Authorization": `Bearer ${TOKEN}`,
+                "Content-Type": "application/json"
+            },
             body: JSON.stringify(payload)
         });
 
         if (!resp.ok) {
-            const txt = await resp.text();
-            console.error(`[planner] Webhook HTTP ${resp.status}: ${txt}`);
-        } else {
-            console.log(`[planner] Webhook envoyé → mode=${mode}, phase=${phase}`);
+            const err = await resp.text();
+            console.error(`[planner] HA error (${resp.status}):`, err);
         }
+
     } catch (e) {
-        console.error("[planner] Erreur d'envoi webhook :", e.message);
+        console.error("[planner] Erreur HTTP:", e);
     }
 }
 
-async function tickScheduler() {
-    const now = new Date();
-
-    try {
-        const { phases, modes } = await loadConfig();
-
-        const mode  = getModeForDate(now, modes);
-        const phase = getPhaseForNow(phases, mode, now);
-
-        if (lastSentMode === null || mode !== lastSentMode || phase !== lastSentPhase) {
-            await sendWebhook(mode, phase, now);
-            lastSentMode  = mode;
-            lastSentPhase = phase;
-        }
-    } catch (e) {
-        console.error("[planner] Erreur scheduler :", e.message);
-    }
-}
-
+// Boucle principale
 function startScheduler() {
-    if (schedulerStarted) return;
-    schedulerStarted = true;
+    console.log(`[planner] Scheduler autonome démarré (tick ${TICK_SECONDS}s).`);
 
-    console.log("[planner] Scheduler autonome démarré (tick 60s).");
+    setInterval(async () => {
+        const mode = getCurrentMode();
+        const phase = getCurrentPhaseForNow();
 
-    tickScheduler().catch(() => {});
-    setInterval(() => {
-        tickScheduler().catch(() => {});
-    }, 60000);
+        console.log(`[planner] Sync HA → Mode=${mode}, Phase=${phase}`);
+
+        await sendToHA(ENTITY_MODE, mode);
+        await sendToHA(ENTITY_PHASE, phase);
+
+    }, TICK_SECONDS * 1000);
 }
 
-module.exports = { startScheduler };
+// Lancer le scheduler
+startScheduler();

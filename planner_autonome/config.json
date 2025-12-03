@@ -18,10 +18,8 @@
 
   "hassio_api": true,
   "auth_api": true,
+  "homeassistant_api": true,
   "hassio_role": "default",
-
-  "ingress": false,
-  "panel_admin": false,
 
   "options": {},
   "schema": {}
