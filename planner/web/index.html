@@ -15,7 +15,7 @@
     <h2>Calendrier des modes de journée</h2>
 
     <div class="calendar-wrapper">
-        <!-- Palette des modes (Travail / Maison / Absence) -->
+
         <div class="control-group calendar-mode-controls">
             <span>Modes de journée :</span>
             <div id="mode-palette"></div>
@@ -46,7 +46,7 @@
             <div>Heure locale : <span id="current-time">--:--</span></div>
             <div>Mode du jour : <span id="current-mode-label">---</span></div>
             <div>Phase actuelle : <span id="current-phase">---</span></div>
-            <div>Statut backend : <span id="ha-status">Aucun</span></div>
+            <div>Statut backend : <span id="ha-status">---</span></div>
         </div>
     </section>
 
@@ -55,13 +55,12 @@
 
 <footer>
     <p>
-        Les plannings (modes + phases) sont stockés sur le serveur dans un fichier JSON
-        mis à jour automatiquement. Le mode du jour et la phase actuelle pourront être
-        exploités dans Home Assistant.
+        Toutes les données (modes & phases) sont stockées dans un fichier JSON sur le serveur
+        grâce à l’add-on Home Assistant. Mise à jour automatique à chaque changement
+        et synchronisation toutes les minutes.
     </p>
 </footer>
 
-<script src="config.js"></script>
 <script src="planner.js"></script>
 </body>
 </html>
