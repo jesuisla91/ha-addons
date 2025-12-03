@@ -14,4 +14,7 @@ schema: {}
 init: false
 
 ports:
-  8099/tcp: 8099
+  "8099/tcp": 8099
+
+ports_description:
+  "8099/tcp": "Test Add-on Web Server"
