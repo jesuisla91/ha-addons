@@ -1,0 +1,11 @@
+{
+  "name": "planner-addon",
+  "version": "1.0.0",
+  "description": "Planner backend service",
+  "main": "server.js",
+  "dependencies": {
+    "express": "^4.19.0",
+    "body-parser": "^1.20.2",
+    "node-cron": "^3.0.2"
+  }
+}
