@@ -1,2 +1,0 @@
-*.sh text eol=lf
-planner_autonome/rootfs/etc/services.d/** text eol=lf
