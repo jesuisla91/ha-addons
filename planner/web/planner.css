@@ -1,4 +1,6 @@
-/* Planner – Styles généraux */
+/* ============================
+   Styles généraux
+   ============================ */
 body {
     margin: 0;
     padding: 0;
@@ -13,35 +15,55 @@ header {
 }
 
 h1, h2 {
-    margin: 10px 0;
+    margin: 10px 20px;
 }
 
-/* Barre info */
-#info-bar {
-    display: flex;
-    gap: 20px;
-    padding: 10px 20px;
+/* Sections */
+#calendar-section,
+#grid-section {
+    margin: 0 20px 20px 20px;
     background: #fff;
-    border-bottom: 1px solid #ddd;
+    padding: 10px 15px 20px 15px;
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
 }
 
-/* Palettes */
-.palette {
+/* Barre de contrôle / statut */
+.control-group {
     display: flex;
-    gap: 12px;
-    padding: 10px 20px;
+    align-items: center;
+    gap: 10px;
+    margin: 5px 0;
 }
 
-.palette .item {
-    padding: 8px 12px;
+.control-group.status {
+    flex-wrap: wrap;
+    font-size: 0.9rem;
+}
+
+.control-group.status div {
+    margin-right: 15px;
+}
+
+/* Palette des modes & phases */
+#mode-palette,
+#phase-palette {
+    display: flex;
+    gap: 8px;
+}
+
+.palette-item {
+    padding: 6px 10px;
     border-radius: 6px;
-    cursor: pointer;
     border: 2px solid transparent;
+    cursor: pointer;
     user-select: none;
+    font-size: 0.9rem;
+    background: #eee;
 }
 
-.palette .item.active {
-    border-color: black;
+.palette-item.active {
+    border-color: #000;
 }
 
 /* Couleurs des modes */
@@ -58,63 +80,101 @@ h1, h2 {
 }
 
 /* Couleurs des phases */
-.phase-nuit { background: #2c3e50; color: white; }
+.phase-nuit { background: #2c3e50; color: #fff; }
 .phase-lever { background: #f1c40f; }
 .phase-presence { background: #2ecc71; }
 .phase-absent { background: #e67e22; }
-.phase-soiree { background: #9b59b6; color: white; }
-.phase-couche { background: #34495e; color: white; }
+.phase-soiree { background: #9b59b6; color: #fff; }
+.phase-couche { background: #34495e; color: #fff; }
 .phase-retour { background: #1abc9c; }
 
 /* Calendrier */
-#calendar-section {
-    padding: 10px 20px;
+.calendar-wrapper {
+    display: inline-block;
+    padding: 10px 0;
 }
 
-.calendar-header {
+#calendar-header {
     display: flex;
-    justify-content: space-between;
     align-items: center;
-    width: 260px;
+    justify-content: center;
+    gap: 10px;
+    margin: 10px 0;
 }
 
-#calendar-grid {
-    margin-top: 10px;
+#calendar-header button {
+    padding: 2px 8px;
+    cursor: pointer;
+}
+
+#cal-month-label {
+    font-weight: bold;
+}
+
+.calendar-grid {
     display: grid;
     grid-template-columns: repeat(7, 35px);
-    gap: 5px;
+    gap: 4px;
 }
 
 .calendar-day {
     width: 35px;
     height: 35px;
-    background: white;
+    background: #ffffff;
     text-align: center;
     line-height: 35px;
     border-radius: 4px;
     cursor: pointer;
     border: 1px solid #ddd;
+    font-size: 0.85rem;
 }
 
-.calendar-day.selected {
-    border: 2px solid #1f6feb;
+.calendar-day:hover {
+    border-color: #1f6feb;
 }
 
-/* Grille des phases horaires */
-.schedule-grid {
+/* Grille des phases : 3 lignes (une par mode) + 24 colonnes heure */
+#schedule-grid {
+    margin-top: 10px;
+}
+
+.schedule-row {
     display: grid;
-    grid-template-columns: repeat(24, 1fr);
-    border: 1px solid #ccc;
-    margin: 20px;
+    grid-template-columns: 70px repeat(24, 1fr);
+    margin-bottom: 4px;
+    align-items: stretch;
 }
 
-.schedule-hour {
-    height: 30px;
-    border-right: 1px solid #ddd;
-    border-bottom: 1px solid #ddd;
+.schedule-row-label {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 0 4px;
+    font-size: 0.8rem;
+    font-weight: bold;
+}
+
+.schedule-cell {
+    height: 26px;
+    border: 1px solid #ddd;
     cursor: crosshair;
+    box-sizing: border-box;
 }
 
-.schedule-hour:last-child {
-    border-right: none;
+/* Pour que les couleurs de phases s'appliquent sur les cellules */
+.schedule-cell.phase-nuit,
+.schedule-cell.phase-lever,
+.schedule-cell.phase-presence,
+.schedule-cell.phase-absent,
+.schedule-cell.phase-soiree,
+.schedule-cell.phase-couche,
+.schedule-cell.phase-retour {
+    color: #fff;
+}
+
+/* Footer */
+footer {
+    font-size: 0.85rem;
+    color: #555;
+    margin: 10px 20px 20px 20px;
 }
