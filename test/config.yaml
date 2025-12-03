@@ -12,3 +12,6 @@ arch:
 options: {}
 schema: {}
 init: false
+
+ports:
+  8099/tcp: 8099
