@@ -1,0 +1,19 @@
+name: Planner
+version: "1.0.0"
+slug: planner
+description: "Add-on Planner – Calendrier et phases horaires avec sauvegarde JSON"
+url: "https://github.com/jesuisla91/ha-addons"
+arch:
+  - amd64
+  - aarch64
+  - armv7
+startup: services
+boot: auto
+webui: "http://[HOST]:[PORT:8099]"
+ports:
+  8099/tcp: 8099
+ingress: false
+map:
+  - config:rw
+options: {}
+schema: {}
