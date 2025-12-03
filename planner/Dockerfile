@@ -1,26 +1,25 @@
-ARG BUILD_FROM=ghcr.io/hassio-addons/base:14.0.0
+﻿ARG BUILD_FROM=ghcr.io/hassio-addons/base:14.0.0
 FROM ${BUILD_FROM}
 
-# Set working dir
+# Dossier de travail
 WORKDIR /app
 
-# Copy files
+# Copie du backend et du frontend
 COPY service/ /app/service/
 COPY web/ /app/web/
-COPY run.sh /app/run.sh
+COPY run.sh /run.sh
 
-# NodeJS
+# Installation de Node.js + npm
 RUN apk add --no-cache nodejs npm
 
-# Install backend deps
+# Installation des dépendances backend
 RUN cd /app/service && npm install
 
-# Make run.sh executable
-RUN chmod a+x /app/run.sh
+# Script exécutable
+RUN chmod a+x /run.sh
 
-# Expose port
+# Port HTTP de l'add-on
 EXPOSE 8099
 
-# REQUIRED FOR HOME ASSISTANT ADD-ONS
-ENTRYPOINT ["/init"]
-CMD []
+# Lance le script principal
+CMD [ "/run.sh" ]
