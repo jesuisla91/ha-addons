@@ -1,29 +1,9 @@
 // ============================================================
-// Planner – Front-end (lié au backend express du Planner Add-on)
+// Planner – Front-end (lié au backend express /api/config)
 // ============================================================
 
-// ------------------------------------------------------------
-// GLOBAL STATE
-// ------------------------------------------------------------
-
-let plannerData = null;
-
-let currentMode = null;
-let currentPhase = null;
-
-let activeDayMode = "Travail";
-let activePhase = "Nuit";
-
-let calDate = new Date();
-let calMonth = calDate.getMonth();
-let calYear = calDate.getFullYear();
-
-let isMouseDown = false;
-
-// Modes de journée
+// ----- Constantes -----
 const MODES = ["Travail", "Maison", "Absence"];
-
-// Phases horaires
 const PHASES = [
     { key: "Nuit", css: "phase-nuit" },
     { key: "Lever", css: "phase-lever" },
@@ -34,20 +14,84 @@ const PHASES = [
     { key: "Retour", css: "phase-retour" }
 ];
 
-// ------------------------------------------------------------
-// API CALLS
-// ------------------------------------------------------------
+// ----- État global -----
+let plannerData = null;
 
+// Mode sélectionné pour affecter le calendrier
+let activeCalendarMode = "Travail";
+
+// Phase sélectionnée pour peindre la grille horaire
+let activePhase = "Nuit";
+
+// Date affichée dans le calendrier
+let calDate = new Date();
+let calMonth = calDate.getMonth();      // 0-11
+let calYear = calDate.getFullYear();    // 20xx
+
+let isMouseDown = false;
+
+// ----- Raccourcis DOM -----
+const elModePalette       = document.getElementById("mode-palette");
+const elPhasePalette      = document.getElementById("phase-palette");
+const elCalendarGrid      = document.getElementById("calendar-grid");
+const elCalMonthLabel     = document.getElementById("cal-month-label");
+const elScheduleGrid      = document.getElementById("schedule-grid");
+const elCurrentTime       = document.getElementById("current-time");
+const elCurrentModeLabel  = document.getElementById("current-mode-label");
+const elCurrentPhase      = document.getElementById("current-phase");
+const elHaStatus          = document.getElementById("ha-status");
+
+// ------------------------------------------------------------
+// Utilitaires
+// ------------------------------------------------------------
+function pad2(n) {
+    return n < 10 ? "0" + n : "" + n;
+}
+
+function makeKey(y, m, d) {
+    return `${y}-${pad2(m)}-${pad2(d)}`;
+}
+
+function monthName(index) {
+    return [
+        "Janvier","Février","Mars","Avril","Mai","Juin",
+        "Juillet","Août","Septembre","Octobre","Novembre","Décembre"
+    ][index];
+}
+
+function defaultModeForDate(dateObj) {
+    const day = dateObj.getDay(); // 0 = dimanche, 6 = samedi
+    // Week-end -> Maison, sinon Travail
+    if (day === 0 || day === 6) return "Maison";
+    return "Travail";
+}
+
+function getModeForDateKey(dateKey) {
+    if (plannerData.schedules && plannerData.schedules[dateKey]) {
+        return plannerData.schedules[dateKey];
+    }
+    const [y,m,d] = dateKey.split("-").map(Number);
+    const dateObj = new Date(y, m - 1, d);
+    return defaultModeForDate(dateObj);
+}
+
+function phaseByKey(key) {
+    return PHASES.find(p => p.key === key) || null;
+}
+
+// ------------------------------------------------------------
+// Chargement / sauvegarde via API
+// ------------------------------------------------------------
 async function loadConfig() {
     try {
         const res = await fetch("/api/config");
         plannerData = await res.json();
-        document.getElementById("ha-status").textContent = "Backend OK";
-        ensureDefaultStructure();
+        elHaStatus.textContent = "Backend OK (chargé)";
+        ensureStructure();
         renderAll();
     } catch (err) {
         console.error("Erreur GET /api/config :", err);
-        document.getElementById("ha-status").textContent = "Backend ERROR";
+        elHaStatus.textContent = "Erreur backend";
     }
 }
 
@@ -58,209 +102,253 @@ async function saveConfig() {
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(plannerData)
         });
-        if (!res.ok) throw new Error();
-        document.getElementById("ha-status").textContent = "Sauvegardé ✔️";
+        if (!res.ok) throw new Error("POST non OK");
+        elHaStatus.textContent = "Sauvegardé ✔️";
     } catch (err) {
-        document.getElementById("ha-status").textContent = "Erreur sauvegarde";
         console.error("Erreur POST /api/config :", err);
+        elHaStatus.textContent = "Erreur sauvegarde";
     }
 }
 
-// ------------------------------------------------------------
-// ENSURE STRUCTURE
-// ------------------------------------------------------------
-
-function ensureDefaultStructure() {
+// Assure la structure minimale du JSON
+function ensureStructure() {
+    if (!plannerData) plannerData = {};
     if (!plannerData.schedules) plannerData.schedules = {};
     if (!plannerData.phases) plannerData.phases = {};
-
-    // Create phase arrays if needed
     for (const mode of MODES) {
         if (!plannerData.phases[mode]) {
-            plannerData.phases[mode] = Array(24).fill(null);
+            plannerData.phases[mode] = new Array(24).fill(null);
         }
     }
 }
 
 // ------------------------------------------------------------
-// RENDERING
+// Rendu global
 // ------------------------------------------------------------
-
 function renderAll() {
     renderModePalette();
     renderPhasePalette();
     renderCalendar();
     renderScheduleGrid();
-    updateClockDisplay();
+    updateCurrentStatus();
 }
 
 // ------------------------------------------------------------
-// MODE PALETTE
+// Palette des modes (pour le calendrier)
 // ------------------------------------------------------------
-
 function renderModePalette() {
-    const container = document.getElementById("mode-palette");
-    container.innerHTML = "";
+    elModePalette.innerHTML = "";
 
     MODES.forEach(mode => {
         const div = document.createElement("div");
-        div.className = `item mode-${mode}`;
+        div.className = "palette-item " + "mode-" + mode;
         div.textContent = mode;
-
-        if (activeDayMode === mode) div.classList.add("active");
-
+        if (activeCalendarMode === mode) {
+            div.classList.add("active");
+        }
         div.addEventListener("click", () => {
-            activeDayMode = mode;
+            activeCalendarMode = mode;
             renderModePalette();
         });
-
-        container.appendChild(div);
+        elModePalette.appendChild(div);
     });
 }
 
 // ------------------------------------------------------------
-// PHASE PALETTE
+// Palette des phases (pour la grille horaire)
 // ------------------------------------------------------------
-
 function renderPhasePalette() {
-    const container = document.getElementById("phase-palette");
-    container.innerHTML = "";
+    elPhasePalette.innerHTML = "";
 
     PHASES.forEach(phase => {
         const div = document.createElement("div");
-        div.className = `item ${phase.css}`;
+        div.className = "palette-item " + phase.css;
         div.textContent = phase.key;
-
-        if (activePhase === phase.key) div.classList.add("active");
-
+        if (activePhase === phase.key) {
+            div.classList.add("active");
+        }
         div.addEventListener("click", () => {
             activePhase = phase.key;
             renderPhasePalette();
         });
-
-        container.appendChild(div);
+        elPhasePalette.appendChild(div);
     });
 }
 
 // ------------------------------------------------------------
-// CALENDAR
+// Calendrier (affectation des modes par jour)
 // ------------------------------------------------------------
-
 function renderCalendar() {
-    const label = document.getElementById("cal-month-label");
-    const grid = document.getElementById("calendar-grid");
-
-    label.textContent = `${monthName(calMonth)} ${calYear}`;
-    grid.innerHTML = "";
+    elCalMonthLabel.textContent = `${monthName(calMonth)} ${calYear}`;
+    elCalendarGrid.innerHTML = "";
 
     const first = new Date(calYear, calMonth, 1);
-    const startDay = first.getDay() === 0 ? 6 : first.getDay() - 1;
-    const days = new Date(calYear, calMonth + 1, 0).getDate();
+    const startDay = (first.getDay() + 6) % 7; // Lundi=0, Dimanche=6
+    const daysInMonth = new Date(calYear, calMonth + 1, 0).getDate();
 
+    // Cases vides avant le 1
     for (let i = 0; i < startDay; i++) {
-        grid.appendChild(document.createElement("div"));
+        const emptyDiv = document.createElement("div");
+        elCalendarGrid.appendChild(emptyDiv);
     }
 
-    for (let d = 1; d <= days; d++) {
-        const div = document.createElement("div");
-        div.textContent = d;
-        div.className = "calendar-day";
-
+    for (let d = 1; d <= daysInMonth; d++) {
         const dateKey = makeKey(calYear, calMonth + 1, d);
-        if (plannerData.schedules[dateKey] === activeDayMode) {
-            div.classList.add("selected");
+        const div = document.createElement("div");
+        div.className = "calendar-day";
+        div.textContent = d;
+
+        const effectiveMode = getModeForDateKey(dateKey);
+        if (effectiveMode) {
+            div.classList.add("mode-" + effectiveMode);
         }
 
         div.addEventListener("click", () => {
-            plannerData.schedules[dateKey] = activeDayMode;
+            plannerData.schedules[dateKey] = activeCalendarMode;
             saveConfig();
             renderCalendar();
+            updateCurrentStatus();
         });
 
-        grid.appendChild(div);
+        elCalendarGrid.appendChild(div);
     }
 }
 
-function monthName(m) {
-    return ["Janvier","Février","Mars","Avril","Mai","Juin","Juillet","Août","Septembre","Octobre","Novembre","Décembre"][m];
-}
-
-function makeKey(y,m,d) {
-    return `${y}-${String(m).padStart(2,"0")}-${String(d).padStart(2,"0")}`;
-}
-
 // ------------------------------------------------------------
-// SCHEDULE GRID (PHASES 24H)
+// Grille 3 lignes x 24 heures (phases par mode)
 // ------------------------------------------------------------
-
 function renderScheduleGrid() {
-    const grid = document.getElementById("schedule-grid");
-    grid.innerHTML = "";
+    elScheduleGrid.innerHTML = "";
 
-    const arr = plannerData.phases[activeDayMode];
+    for (const mode of MODES) {
+        const row = document.createElement("div");
+        row.className = "schedule-row";
 
-    for (let h = 0; h < 24; h++) {
-        const div = document.createElement("div");
-        div.className = "schedule-hour";
+        const label = document.createElement("div");
+        label.className = "schedule-row-label";
+        label.textContent = mode;
+        row.appendChild(label);
 
-        if (arr[h]) {
-            const ph = PHASES.find(p => p.key === arr[h]);
-            if (ph) div.classList.add(ph.css);
+        const arr = plannerData.phases[mode];
+
+        for (let h = 0; h < 24; h++) {
+            const cell = document.createElement("div");
+            cell.className = "schedule-cell";
+            cell.dataset.mode = mode;
+            cell.dataset.hour = String(h);
+
+            const phaseKey = arr[h];
+            if (phaseKey) {
+                applyPhaseCss(cell, phaseKey);
+            }
+
+            cell.addEventListener("mousedown", () => {
+                isMouseDown = true;
+                setPhaseOnCell(cell, mode, h);
+            });
+
+            cell.addEventListener("mouseover", () => {
+                if (isMouseDown) {
+                    setPhaseOnCell(cell, mode, h);
+                }
+            });
+
+            row.appendChild(cell);
         }
 
-        div.addEventListener("mousedown", () => {
-            isMouseDown = true;
-            arr[h] = activePhase;
-            saveConfig();
-            renderScheduleGrid();
-        });
-
-        div.addEventListener("mouseover", () => {
-            if (isMouseDown) {
-                arr[h] = activePhase;
-                saveConfig();
-                renderScheduleGrid();
-            }
-        });
-
-        grid.appendChild(div);
+        elScheduleGrid.appendChild(row);
     }
 
-    document.addEventListener("mouseup", () => (isMouseDown = false));
+    // Gestion du relâchement souris globale
+    document.addEventListener("mouseup", () => {
+        isMouseDown = false;
+    });
+}
+
+function clearPhaseCss(cell) {
+    for (const ph of PHASES) {
+        cell.classList.remove(ph.css);
+    }
+}
+
+function applyPhaseCss(cell, phaseKey) {
+    clearPhaseCss(cell);
+    const ph = phaseByKey(phaseKey);
+    if (ph) {
+        cell.classList.add(ph.css);
+    }
+}
+
+function setPhaseOnCell(cell, mode, hour) {
+    plannerData.phases[mode][hour] = activePhase;
+    applyPhaseCss(cell, activePhase);
+    saveConfig();
+    updateCurrentStatus();
 }
 
 // ------------------------------------------------------------
-// CLOCK (auto refresh)
+// Statut courant : heure, mode du jour, phase actuelle
 // ------------------------------------------------------------
-
 function updateClockDisplay() {
     const now = new Date();
-    document.getElementById("current-time").textContent = now.toLocaleTimeString("fr-FR");
+    elCurrentTime.textContent = now.toLocaleTimeString("fr-FR");
 }
 
-setInterval(updateClockDisplay, 1000);
+function updateCurrentStatus() {
+    const now = new Date();
+    const key = makeKey(now.getFullYear(), now.getMonth() + 1, now.getDate());
+    const modeToday = getModeForDateKey(key);
+    elCurrentModeLabel.textContent = modeToday || "---";
 
-// Reload full config every 60s
-setInterval(loadConfig, 60000);
+    const hour = now.getHours();
+    const arr = plannerData.phases[modeToday] || [];
+    const phaseKey = arr[hour] || null;
+    elCurrentPhase.textContent = phaseKey || "---";
+
+    // On peut aussi l'enregistrer dans le JSON si tu veux
+    plannerData.current = {
+        date: key,
+        time: now.toISOString(),
+        mode: modeToday,
+        hour: hour,
+        phase: phaseKey
+    };
+}
+
+// Horloge temps réel
+setInterval(() => {
+    updateClockDisplay();
+    updateCurrentStatus();
+}, 1000);
+
+// Rechargement complet de la config toutes les 60s
+setInterval(() => {
+    loadConfig();
+}, 60000);
 
 // ------------------------------------------------------------
-// INIT
+// Navigation calendrier
 // ------------------------------------------------------------
-
-document.getElementById("prev-month").onclick = () => {
-    if (--calMonth < 0) {
+document.getElementById("cal-prev").addEventListener("click", () => {
+    calMonth--;
+    if (calMonth < 0) {
         calMonth = 11;
         calYear--;
     }
     renderCalendar();
-};
+});
 
-document.getElementById("next-month").onclick = () => {
-    if (++calMonth > 11) {
+document.getElementById("cal-next").addEventListener("click", () => {
+    calMonth++;
+    if (calMonth > 11) {
         calMonth = 0;
         calYear++;
     }
     renderCalendar();
-};
+});
 
+// ------------------------------------------------------------
+// Init
+// ------------------------------------------------------------
+updateClockDisplay();
 loadConfig();
