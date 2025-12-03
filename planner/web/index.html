@@ -6,7 +6,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="planner.css">
 </head>
+
 <body>
+
 <header>
     <h1>Planificateur de journée pour Home Assistant</h1>
 </header>
@@ -14,21 +16,18 @@
 <section id="calendar-section">
     <h2>Calendrier des modes de journée</h2>
 
-    <div class="calendar-wrapper">
-
-        <div class="control-group calendar-mode-controls">
-            <span>Modes de journée :</span>
-            <div id="mode-palette"></div>
-        </div>
-
-        <div id="calendar-header">
-            <button id="cal-prev">&laquo;</button>
-            <span id="cal-month-label">Mois AAAA</span>
-            <button id="cal-next">&raquo;</button>
-        </div>
-
-        <div id="calendar-grid" class="calendar-grid"></div>
+    <div class="control-group calendar-mode-controls">
+        <span>Modes de journée :</span>
+        <div id="mode-palette"></div>
     </div>
+
+    <div id="calendar-header">
+        <button id="cal-prev">&laquo;</button>
+        <span id="cal-month-label">Mois AAAA</span>
+        <button id="cal-next">&raquo;</button>
+    </div>
+
+    <div id="calendar-grid" class="calendar-grid"></div>
 </section>
 
 <br>
@@ -37,6 +36,7 @@
     <h2>Planning horaire des phases (glisser pour peindre)</h2>
 
     <section id="controls">
+
         <div class="control-group">
             <span>Phases de la journée :</span>
             <div id="phase-palette"></div>
@@ -46,21 +46,26 @@
             <div>Heure locale : <span id="current-time">--:--</span></div>
             <div>Mode du jour : <span id="current-mode-label">---</span></div>
             <div>Phase actuelle : <span id="current-phase">---</span></div>
-            <div>Statut backend : <span id="ha-status">---</span></div>
+            <div>Backend : <span id="ha-status">---</span></div>
         </div>
+
     </section>
 
+    <h3>Configuration des phases (24h)</h3>
     <div id="schedule-grid" class="grid"></div>
+
 </section>
 
 <footer>
     <p>
-        Toutes les données (modes & phases) sont stockées dans un fichier JSON sur le serveur
-        grâce à l’add-on Home Assistant. Mise à jour automatique à chaque changement
-        et synchronisation toutes les minutes.
+        Les modes de journée et les phases horaires sont stockés sur le serveur
+        dans un fichier JSON géré par l’add-on Home Assistant.  
+        Les données sont sauvegardées automatiquement à chaque modification et
+        resynchronisées régulièrement.
     </p>
 </footer>
 
 <script src="planner.js"></script>
+
 </body>
 </html>
