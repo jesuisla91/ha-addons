@@ -7,9 +7,11 @@
   "startup": "services",
   "boot": "auto",
   "init": false,
+
   "ports": {
     "8000/tcp": 8000
   },
+
   "webui": "http://[HOST]:[PORT:8000]",
 
   "map": ["data:rw"],
@@ -17,6 +19,9 @@
   "hassio_api": true,
   "auth_api": true,
   "hassio_role": "default",
+
+  "ingress": false,
+  "panel_admin": false,
 
   "options": {},
   "schema": {}
