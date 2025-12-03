@@ -1,6 +1,6 @@
 /* ============================
    Styles généraux
-   ============================ */
+============================ */
 body {
     margin: 0;
     padding: 0;
@@ -18,7 +18,9 @@ h1, h2 {
     margin: 10px 20px;
 }
 
-/* Sections */
+/* ============================
+   Sections
+============================ */
 #calendar-section,
 #grid-section {
     margin: 0 20px 20px 20px;
@@ -28,7 +30,9 @@ h1, h2 {
     box-shadow: 0 1px 3px rgba(0,0,0,0.1);
 }
 
-/* Barre de contrôle / statut */
+/* ============================
+   Barre de contrôle / statut
+============================ */
 .control-group {
     display: flex;
     align-items: center;
@@ -45,7 +49,9 @@ h1, h2 {
     margin-right: 15px;
 }
 
-/* Palette des modes & phases */
+/* ============================
+   Palette des modes & phases
+============================ */
 #mode-palette,
 #phase-palette {
     display: flex;
@@ -66,20 +72,24 @@ h1, h2 {
     border-color: #000;
 }
 
-/* Couleurs des modes */
+/* ============================
+   Couleurs des modes
+============================ */
 .mode-Travail {
-    background-color: #ffe69b;
+    background-color: #ffe69b !important;
 }
 
 .mode-Maison {
-    background-color: #b1f5d2;
+    background-color: #b1f5d2 !important;
 }
 
 .mode-Absence {
-    background-color: #f7b1b1;
+    background-color: #f7b1b1 !important;
 }
 
-/* Couleurs des phases */
+/* ============================
+   Couleurs des phases
+============================ */
 .phase-nuit { background: #2c3e50; color: #fff; }
 .phase-lever { background: #f1c40f; }
 .phase-presence { background: #2ecc71; }
@@ -88,7 +98,9 @@ h1, h2 {
 .phase-couche { background: #34495e; color: #fff; }
 .phase-retour { background: #1abc9c; }
 
-/* Calendrier */
+/* ============================
+   Calendrier
+============================ */
 .calendar-wrapper {
     display: inline-block;
     padding: 10px 0;
@@ -133,7 +145,9 @@ h1, h2 {
     border-color: #1f6feb;
 }
 
-/* Grille des phases : 3 lignes (une par mode) + 24 colonnes heure */
+/* ============================
+   Planning horaire (3 lignes)
+============================ */
 #schedule-grid {
     margin-top: 10px;
 }
@@ -161,7 +175,7 @@ h1, h2 {
     box-sizing: border-box;
 }
 
-/* Pour que les couleurs de phases s'appliquent sur les cellules */
+/* Permet à la couleur des phases d'être visible */
 .schedule-cell.phase-nuit,
 .schedule-cell.phase-lever,
 .schedule-cell.phase-presence,
@@ -172,7 +186,9 @@ h1, h2 {
     color: #fff;
 }
 
-/* Footer */
+/* ============================
+   Footer
+============================ */
 footer {
     font-size: 0.85rem;
     color: #555;
