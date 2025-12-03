@@ -1,12 +1,13 @@
 ARG BUILD_FROM=ghcr.io/home-assistant/amd64-base:latest
 FROM ${BUILD_FROM}
 
-# Install Node.js and Node-RED
-RUN apk add --no-cache nodejs npm \
-    && npm install -g --unsafe-perm node-red
+# Install Node.js + npm
+RUN apk add --no-cache nodejs npm
 
-# Copy rootfs (if any)
-COPY rootfs/ /
+# Add a simple Web server using Node.js
+COPY web/ /opt/web/
+COPY run.sh /run.sh
 
-# Default command
+RUN chmod +x /run.sh
+
 CMD ["/run.sh"]
