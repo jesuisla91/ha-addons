@@ -2,46 +2,66 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <title>Planner – Modes & Phases</title>
+    <title>Planificateur de journée pour Home Assistant</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="planner.css">
 </head>
-
 <body>
-    <header>
-        <h1>Planner – Modes de journée & Phases horaires</h1>
-    </header>
+<header>
+    <h1>Planificateur de journée pour Home Assistant</h1>
+</header>
 
-    <section id="info-bar">
-        <div>Heure actuelle : <span id="current-time">--:--</span></div>
-        <div>Mode actuel : <span id="current-mode-label">--</span></div>
-        <div>Phase actuelle : <span id="current-phase">--</span></div>
-        <div>Backend : <span id="ha-status">Chargement...</span></div>
-    </section>
+<section id="calendar-section">
+    <h2>Calendrier des modes de journée</h2>
 
-    <section id="calendar-section">
-        <div class="calendar-header">
-            <button id="prev-month">&lt;</button>
-            <span id="cal-month-label">Mois</span>
-            <button id="next-month">&gt;</button>
+    <div class="calendar-wrapper">
+        <!-- Palette des modes (Travail / Maison / Absence) -->
+        <div class="control-group calendar-mode-controls">
+            <span>Modes de journée :</span>
+            <div id="mode-palette"></div>
         </div>
+
+        <div id="calendar-header">
+            <button id="cal-prev">&laquo;</button>
+            <span id="cal-month-label">Mois AAAA</span>
+            <button id="cal-next">&raquo;</button>
+        </div>
+
         <div id="calendar-grid" class="calendar-grid"></div>
+    </div>
+</section>
+
+<br>
+
+<section id="grid-section">
+    <h2>Planning horaire des phases (glisser pour peindre)</h2>
+
+    <section id="controls">
+        <div class="control-group">
+            <span>Phases de la journée :</span>
+            <div id="phase-palette"></div>
+        </div>
+
+        <div class="control-group status">
+            <div>Heure locale : <span id="current-time">--:--</span></div>
+            <div>Mode du jour : <span id="current-mode-label">---</span></div>
+            <div>Phase actuelle : <span id="current-phase">---</span></div>
+            <div>Statut backend : <span id="ha-status">Aucun</span></div>
+        </div>
     </section>
 
-    <section id="mode-section">
-        <h2>Modes de journée</h2>
-        <div id="mode-palette" class="palette"></div>
-    </section>
+    <div id="schedule-grid" class="grid"></div>
+</section>
 
-    <section id="phase-section">
-        <h2>Phases horaires</h2>
-        <div id="phase-palette" class="palette"></div>
-    </section>
+<footer>
+    <p>
+        Les plannings (modes + phases) sont stockés sur le serveur dans un fichier JSON
+        mis à jour automatiquement. Le mode du jour et la phase actuelle pourront être
+        exploités dans Home Assistant.
+    </p>
+</footer>
 
-    <section id="schedule-section">
-        <h2>Configuration des phases (24h)</h2>
-        <div id="schedule-grid" class="schedule-grid"></div>
-    </section>
-
-    <script src="planner.js"></script>
+<script src="config.js"></script>
+<script src="planner.js"></script>
 </body>
 </html>
