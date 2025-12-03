@@ -1,3 +1,3 @@
 #!/usr/bin/with-contenv bash
-echo "Test addon is running..."
-sleep infinity
+echo "Starting Test Add-on..."
+node /service/server.js
