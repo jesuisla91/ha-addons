@@ -226,7 +226,22 @@ function renderCalendar() {
 // ------------------------------------------------------------
 // GRILLE 3 LIGNES x 24 HEURES
 // ------------------------------------------------------------
+
+function renderScheduleHeader() {
+    const header = document.getElementById("schedule-header");
+    header.innerHTML = "<div class='schedule-row-label'></div>";
+
+    for (let h = 0; h < 24; h++) {
+        const cell = document.createElement("div");
+        cell.className = "schedule-cell";
+        cell.textContent = h;
+        header.appendChild(cell);
+    }
+}
+
+
 function renderScheduleGrid() {
+    renderScheduleHeader();
     elScheduleGrid.innerHTML = "";
 
     MODES.forEach(mode => {
