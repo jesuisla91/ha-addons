@@ -30,21 +30,6 @@ h1, h2 {
     box-shadow: 0 1px 3px rgba(0,0,0,0.1);
 }
 
-/* Centre tout dans la zone calendrier */
-#calendar-section {
-    text-align: center;
-}
-
-/* Centre le bouton précédent + mois + bouton suivant */
-#calendar-header {
-    display: inline-flex;          /* bloc centré et adaptatif */
-    align-items: center;
-    justify-content: center;
-    gap: 10px;
-    margin: 10px auto;
-}
-
-
 
 /* ============================
    Barre de contrôle / statut
