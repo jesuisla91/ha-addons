@@ -90,7 +90,7 @@ h1, h2 {
 /* ============================
    Couleurs des phases
 ============================ */
-.phase-nuit { background: #2c3e50; color: #fff; }
+.phase-nuit { background: #f24343; color: #fff; }
 .phase-lever { background: #f1c40f; }
 .phase-presence { background: #2ecc71; }
 .phase-absent { background: #e67e22; }
