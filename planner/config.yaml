@@ -18,8 +18,7 @@ panel_admin: true
 
 webui: "http://[HOST]:[PORT:8099]"
 ports:
-  8099/tcp: 8099
-ingress: false
+  8099/tcp: null
 map:
   - config:rw
 options: {}
