@@ -11,6 +11,11 @@ arch:
 startup: services
 boot: auto
 url: "https://github.com/jesuisla91/ha-addons"
+
+ingress: true
+ingress_port: 8099
+panel_admin: true
+
 webui: "http://[HOST]:[PORT:8099]"
 ports:
   8099/tcp: 8099
