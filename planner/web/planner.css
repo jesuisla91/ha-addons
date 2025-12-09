@@ -179,6 +179,12 @@ h1, h2 {
     border: 1px solid #ddd;
     cursor: crosshair;
     box-sizing: border-box;
+
+   /* 👉 Centrage du contenu dans la case */
+    display: flex;
+    align-items: center;      /* centre verticalement */
+    justify-content: center;  /* centre horizontalement */
+    text-align: center;
 }
 
 /* Cellule correspondant à l'heure courante */
