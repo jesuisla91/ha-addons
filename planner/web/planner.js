@@ -321,10 +321,24 @@ function updateCurrentStatus() {
     const mode = getModeForDateKey(key);
 
     elCurrentModeLabel.textContent = mode;
-
-    const phaseKey = plannerData.phases[mode][now.getHours()];
+    
+    const currentHour = now.getHours();
+    const phaseKey = plannerData.phases[mode][currentHour];
     elCurrentPhase.textContent = phaseKey || "---";
+
+    // 🔹 Mise en évidence de la colonne de l'heure courante
+    const cells = document.querySelectorAll("#schedule-grid .schedule-cell");
+
+    cells.forEach(cell => {
+        cell.classList.remove("current-hour");
+
+        const h = Number(cell.dataset.hour);
+        if (!Number.isNaN(h) && h === currentHour) {
+            cell.classList.add("current-hour");
+        }
+    });
 }
+
 
 // horloge
 setInterval(updateCurrentStatus, 1000);
