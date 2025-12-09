@@ -181,6 +181,13 @@ h1, h2 {
     box-sizing: border-box;
 }
 
+/* Cellule correspondant à l'heure courante */
+.schedule-cell.current-hour {
+    border: 2px solid #1f6feb;
+    box-shadow: 0 0 4px rgba(31, 111, 235, 0.6);
+}
+
+
 /* Permet à la couleur des phases d'être visible */
 .schedule-cell.phase-nuit,
 .schedule-cell.phase-lever,
