@@ -32,7 +32,7 @@ h1, h2 {
 
 /* Jour d'aujourd'hui dans le calendrier */
 .calendar-day.today {
-    border: 2px solid #1f6feb;
+    border: 5px solid #F56827;
     font-weight: bold;
 }
 
