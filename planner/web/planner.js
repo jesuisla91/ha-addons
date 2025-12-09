@@ -193,6 +193,10 @@ function renderCalendar() {
     const startDay = (first.getDay() + 6) % 7; // lundi=0
     const days = new Date(calYear, calMonth+1, 0).getDate();
 
+    // 🔹 Calcul de la date d'aujourd'hui
+    const today      = new Date();
+    const todayKey   = makeKey(today.getFullYear(), today.getMonth() + 1, today.getDate());
+
     // cases vides
     for (let i = 0; i < startDay; i++) {
         elCalendarGrid.appendChild(document.createElement("div"));
@@ -205,7 +209,12 @@ function renderCalendar() {
 
         div.className = "calendar-day";
         div.textContent = d;
-
+        
+        // 🔹 Si c'est aujourd'hui, on ajoute la classe spéciale
+        if (dateKey === todayKey) {
+            div.classList.add("today");
+        }
+        
         // appliquer la couleur du mode
         const mode = getModeForDateKey(dateKey);
         div.classList.add("mode-" + mode);
