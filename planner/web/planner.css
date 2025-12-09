@@ -183,7 +183,7 @@ h1, h2 {
 
 /* Cellule correspondant à l'heure courante */
 .schedule-cell.current-hour {
-    border: 2px solid #1f6feb;
+    border: 2px solid #F56827;
     box-shadow: 0 0 4px rgba(31, 111, 235, 0.6);
 }
 
