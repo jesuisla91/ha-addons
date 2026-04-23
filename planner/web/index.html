@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <title>Planificateur de journée</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- IMPORTANT : <base> permet de gérer l'URL dynamique de l'Ingress HA -->
+    <base href="./">
     <link rel="stylesheet" href="planner.css">
 </head>
 
@@ -64,7 +66,7 @@
 <footer>
     <p>
         Les modes de journée et les phases horaires sont stockés sur le serveur
-        dans un fichier JSON géré par l’add-on Home Assistant.  
+        dans un fichier JSON géré par l'add-on Home Assistant.
         Les données sont sauvegardées automatiquement à chaque modification et
         resynchronisées régulièrement.
     </p>
