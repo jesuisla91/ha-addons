@@ -1,5 +1,6 @@
 // service/server.js
 // Backend for Planner add-on: serves web UI + JSON config API
+// v1.0.1 - Compatible Home Assistant Ingress
 
 const express = require("express");
 const bodyParser = require("body-parser");
@@ -9,6 +10,7 @@ const cron = require("node-cron");
 
 const app = express();
 const PORT = 8099;
+const HOST = "0.0.0.0"; // IMPORTANT : écouter sur toutes les interfaces pour l'Ingress HA
 
 // Persistent JSON file (add-on data directory)
 const DATA_FILE = "/data/planner_config.json";
@@ -123,6 +125,6 @@ cron.schedule("* * * * *", () => {
 // Start server
 // ------------------------------------------------------
 
-app.listen(PORT, () => {
-  console.log(`Planner add-on web server running on port ${PORT}`);
+app.listen(PORT, HOST, () => {
+  console.log(`Planner add-on web server running on ${HOST}:${PORT}`);
 });
