@@ -1,6 +1,6 @@
 name: Planner
 description: "Planner des modes de journée et des phases horaires"
-version: "1.0.1"
+version: "1.0.2"
 slug: planner
 init: false
 arch:
@@ -20,10 +20,13 @@ panel_icon: mdi:calendar-clock
 panel_title: Planner
 panel_admin: false
 
-# Plus de port exposé publiquement (plus de DuckDNS).
-# Si tu veux malgré tout garder un accès direct pour debug, remets :
-#   ports:
-#     8099/tcp: 8099
+# --- PORT INTERNE (réseau Docker du Supervisor uniquement) ---
+# null = port non exposé sur l'hôte HAOS (pas de LAN, pas d'Internet)
+# Mais accessible aux autres add-ons via homeassistant.local:8099
+ports:
+  8099/tcp: null
+ports_description:
+  8099/tcp: "API interne (Node-RED)"
 
 map:
   - config:rw
