@@ -1,6 +1,7 @@
 // ============================================================
 //  PLANNER – VERSION FINALE
 //  Compatible backend JSON (GET/POST /api/config)
+//  Compatible Home Assistant Ingress (chemins relatifs)
 //  Synchronisation automatique + couleur du calendrier
 //  3 lignes horaires (Travail / Maison / Absence)
 // ============================================================
@@ -19,6 +20,14 @@ const PHASES = [
     { key: "Coucher", css: "phase-couche" },
     { key: "Retour", css: "phase-retour" }
 ];
+
+// ------------------------------------------------------------
+// URL DE BASE (compatible Ingress HA)
+// ------------------------------------------------------------
+// En accès direct : location.pathname = "/"
+// Via Ingress HA   : location.pathname = "/api/hassio_ingress/<token>/"
+// On enlève juste le slash final pour pouvoir concaténer "/api/..."
+const API_BASE = window.location.pathname.replace(/\/$/, "");
 
 // ------------------------------------------------------------
 // ÉTAT GLOBAL
@@ -83,7 +92,7 @@ function getModeForDateKey(dateKey) {
 // ------------------------------------------------------------
 async function loadConfig() {
     try {
-        const res = await fetch("/api/config");
+        const res = await fetch(`${API_BASE}/api/config`);
         plannerData = await res.json();
         elHaStatus.textContent = "Backend OK";
 
@@ -98,7 +107,7 @@ async function loadConfig() {
 
 async function saveConfig() {
     try {
-        const res = await fetch("/api/config", {
+        const res = await fetch(`${API_BASE}/api/config`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(plannerData)
@@ -209,12 +218,12 @@ function renderCalendar() {
 
         div.className = "calendar-day";
         div.textContent = d;
-        
+
         // 🔹 Si c'est aujourd'hui, on ajoute la classe spéciale
         if (dateKey === todayKey) {
             div.classList.add("today");
         }
-        
+
         // appliquer la couleur du mode
         const mode = getModeForDateKey(dateKey);
         div.classList.add("mode-" + mode);
@@ -321,7 +330,7 @@ function updateCurrentStatus() {
     const mode = getModeForDateKey(key);
 
     elCurrentModeLabel.textContent = mode;
-    
+
     const currentHour = now.getHours();
     const phaseKey = plannerData.phases[mode][currentHour];
     elCurrentPhase.textContent = phaseKey || "---";
