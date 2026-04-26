@@ -1,9 +1,12 @@
 // ============================================================
-//  PLANNER – VERSION FINALE
-//  Compatible backend JSON (GET/POST /api/config)
-//  Compatible Home Assistant Ingress (chemins relatifs)
-//  Synchronisation automatique + couleur du calendrier
-//  3 lignes horaires (Travail / Maison / Absence)
+//  PLANNER - VERSION CORRIGEE
+//  Fix : bug "plannerData is null" au demarrage
+//
+//  Modifications par rapport a l'original :
+//  1. getModeForDateKey : garde null-safe sur plannerData
+//  2. updateCurrentStatus : early return si plannerData pas charge
+//  3. renderScheduleGrid + setPhase : gardes null-safe
+//  4. INIT : updateCurrentStatus() appele AVANT loadConfig()
 // ============================================================
 
 // ------------------------------------------------------------
@@ -21,30 +24,22 @@ const PHASES = [
     { key: "Retour", css: "phase-retour" }
 ];
 
-// ------------------------------------------------------------
-// URL DE BASE (compatible Ingress HA)
-// ------------------------------------------------------------
-// En accès direct : location.pathname = "/"
-// Via Ingress HA   : location.pathname = "/api/hassio_ingress/<token>/"
-// On enlève juste le slash final pour pouvoir concaténer "/api/..."
 const API_BASE = window.location.pathname.replace(/\/$/, "");
 
 // ------------------------------------------------------------
-// ÉTAT GLOBAL
+// ETAT GLOBAL
 // ------------------------------------------------------------
 let plannerData = null;
 
-let activeModeCalendar = "Travail";   // mode sélectionné pour peindre le calendrier
-let activePhase = "Nuit";             // phase sélectionnée pour la grille horaire
+let activeModeCalendar = "Travail";
+let activePhase = "Nuit";
 
 let isMouseDown = false;
 
-// date affichée dans le calendrier
 let now = new Date();
 let calMonth = now.getMonth();
 let calYear = now.getFullYear();
 
-// raccourcis DOM
 const elModePalette      = document.getElementById("mode-palette");
 const elPhasePalette     = document.getElementById("phase-palette");
 const elCalendarGrid     = document.getElementById("calendar-grid");
@@ -69,21 +64,21 @@ function monthName(m) {
             "Juillet","Août","Septembre","Octobre","Novembre","Décembre"][m];
 }
 
-// Si un jour n'a pas de mode défini → déduction automatique
-function autoMode(y,m,d) {
-    const date = new Date(y, m-1, d);
+function autoMode(y, m, d) {
+    const date = new Date(y, m - 1, d);
     const day = date.getDay();
     return (day === 0 || day === 6) ? "Maison" : "Travail";
 }
 
-// renvoie mode pour un jour
+// FIX 1 : garde null-safe
 function getModeForDateKey(dateKey) {
-    if (!plannerData.schedules[dateKey])
+    if (!plannerData || !plannerData.schedules || !plannerData.schedules[dateKey]) {
         return autoMode(
-            parseInt(dateKey.substring(0,4)),
-            parseInt(dateKey.substring(5,7)),
-            parseInt(dateKey.substring(8,10))
+            parseInt(dateKey.substring(0, 4)),
+            parseInt(dateKey.substring(5, 7)),
+            parseInt(dateKey.substring(8, 10))
         );
+    }
     return plannerData.schedules[dateKey];
 }
 
@@ -123,7 +118,6 @@ async function saveConfig() {
     }
 }
 
-// Assure la structure JSON
 function ensureStructure() {
     if (!plannerData.schedules) plannerData.schedules = {};
     if (!plannerData.phases) plannerData.phases = {};
@@ -145,9 +139,6 @@ function renderAll() {
     updateCurrentStatus();
 }
 
-// ------------------------------------------------------------
-// PALETTE DES MODES
-// ------------------------------------------------------------
 function renderModePalette() {
     elModePalette.innerHTML = "";
 
@@ -168,9 +159,6 @@ function renderModePalette() {
     });
 }
 
-// ------------------------------------------------------------
-// PALETTE DES PHASES
-// ------------------------------------------------------------
 function renderPhasePalette() {
     elPhasePalette.innerHTML = "";
 
@@ -191,59 +179,46 @@ function renderPhasePalette() {
     });
 }
 
-// ------------------------------------------------------------
-// CALENDRIER
-// ------------------------------------------------------------
 function renderCalendar() {
     elCalMonthLabel.textContent = `${monthName(calMonth)} ${calYear}`;
     elCalendarGrid.innerHTML = "";
 
     const first = new Date(calYear, calMonth, 1);
-    const startDay = (first.getDay() + 6) % 7; // lundi=0
-    const days = new Date(calYear, calMonth+1, 0).getDate();
+    const startDay = (first.getDay() + 6) % 7;
+    const days = new Date(calYear, calMonth + 1, 0).getDate();
 
-    // 🔹 Calcul de la date d'aujourd'hui
-    const today      = new Date();
-    const todayKey   = makeKey(today.getFullYear(), today.getMonth() + 1, today.getDate());
+    const today = new Date();
+    const todayKey = makeKey(today.getFullYear(), today.getMonth() + 1, today.getDate());
 
-    // cases vides
     for (let i = 0; i < startDay; i++) {
         elCalendarGrid.appendChild(document.createElement("div"));
     }
 
-    // jours
     for (let d = 1; d <= days; d++) {
-        const dateKey = makeKey(calYear, calMonth+1, d);
+        const dateKey = makeKey(calYear, calMonth + 1, d);
         const div = document.createElement("div");
 
         div.className = "calendar-day";
         div.textContent = d;
 
-        // 🔹 Si c'est aujourd'hui, on ajoute la classe spéciale
         if (dateKey === todayKey) {
             div.classList.add("today");
         }
 
-        // appliquer la couleur du mode
         const mode = getModeForDateKey(dateKey);
         div.classList.add("mode-" + mode);
 
-        // évènement clic (changer mode du jour)
         div.onclick = () => {
+            if (!plannerData) return;
             plannerData.schedules[dateKey] = activeModeCalendar;
-
             saveConfig();
-            renderCalendar(); // recolorisation immédiate
+            renderCalendar();
             updateCurrentStatus();
         };
 
         elCalendarGrid.appendChild(div);
     }
 }
-
-// ------------------------------------------------------------
-// GRILLE 3 LIGNES x 24 HEURES
-// ------------------------------------------------------------
 
 function renderScheduleHeader() {
     const header = document.getElementById("schedule-header");
@@ -257,13 +232,13 @@ function renderScheduleHeader() {
     }
 }
 
-
 function renderScheduleGrid() {
     renderScheduleHeader();
     elScheduleGrid.innerHTML = "";
 
-    MODES.forEach(mode => {
+    if (!plannerData || !plannerData.phases) return;
 
+    MODES.forEach(mode => {
         const row = document.createElement("div");
         row.className = "schedule-row";
 
@@ -313,31 +288,34 @@ function applyPhaseCss(cell, key) {
 }
 
 function setPhase(mode, hour, cell) {
+    if (!plannerData || !plannerData.phases) return;
     plannerData.phases[mode][hour] = activePhase;
     applyPhaseCss(cell, activePhase);
     saveConfig();
     updateCurrentStatus();
 }
 
-// ------------------------------------------------------------
-// STATUT ACTUEL (mode du jour + phase actuelle)
-// ------------------------------------------------------------
+// FIX 2 : garde dans updateCurrentStatus
 function updateCurrentStatus() {
     const now = new Date();
     elCurrentTime.textContent = now.toLocaleTimeString("fr-FR");
 
-    const key = makeKey(now.getFullYear(), now.getMonth()+1, now.getDate());
+    if (!plannerData || !plannerData.phases) {
+        elCurrentModeLabel.textContent = "...";
+        elCurrentPhase.textContent = "...";
+        return;
+    }
+
+    const key = makeKey(now.getFullYear(), now.getMonth() + 1, now.getDate());
     const mode = getModeForDateKey(key);
 
     elCurrentModeLabel.textContent = mode;
 
     const currentHour = now.getHours();
-    const phaseKey = plannerData.phases[mode][currentHour];
+    const phaseKey = plannerData.phases[mode] ? plannerData.phases[mode][currentHour] : null;
     elCurrentPhase.textContent = phaseKey || "---";
 
-    // 🔹 Mise en évidence de la colonne de l'heure courante
     const cells = document.querySelectorAll("#schedule-grid .schedule-cell");
-
     cells.forEach(cell => {
         cell.classList.remove("current-hour");
 
@@ -348,16 +326,9 @@ function updateCurrentStatus() {
     });
 }
 
-
-// horloge
 setInterval(updateCurrentStatus, 1000);
-
-// synchro backend toutes les minutes
 setInterval(loadConfig, 60000);
 
-// ------------------------------------------------------------
-// NAVIGATION CALENDRIER
-// ------------------------------------------------------------
 document.getElementById("cal-prev").onclick = () => {
     calMonth--;
     if (calMonth < 0) {
@@ -376,8 +347,7 @@ document.getElementById("cal-next").onclick = () => {
     renderCalendar();
 };
 
-// ------------------------------------------------------------
-// INIT
-// ------------------------------------------------------------
-loadConfig();
+// FIX 3 : ordre d'init - updateCurrentStatus avant loadConfig
+//         (la garde gere le cas null jusqu'au chargement)
 updateCurrentStatus();
+loadConfig();
