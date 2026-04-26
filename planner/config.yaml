@@ -1,6 +1,6 @@
 name: Planner
 description: "Planner des modes de journée et des phases horaires"
-version: "1.0.3"
+version: "1.0.4"
 slug: planner
 init: false
 arch:
